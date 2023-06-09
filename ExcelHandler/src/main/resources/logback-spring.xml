@@ -1,0 +1,73 @@
+<configuration>
+	<property resource="application.properties" />
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="ROTATE_FILE_DAILY" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logging.file.location}/${logging.file.name}</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${logging.file.location}/%d{yyyy-MM-dd}/health-check-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="csv" class="ch.qos.logback.core.rolling.RollingFileAppender" additivity="true">
+		<file>${logging.file.location}/${logging.file.name}</file>
+		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+			<layout class="com.sxt.healthcheck.logger.LogFileHeaderPatternLayout">
+				<header>DateTime</header>
+				<pattern>%msg%n</pattern>
+			</layout>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${logging.file.location}/health-check-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+			<maxFileSize>10MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logging.file.location}/${logging.file.name}</file>
+		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+			<layout class="com.sxt.healthcheck.logger.LogFileHeaderPatternLayout">
+				<header>DateTime,URL,UserName,Status,ResponseTime,StatusCode,Error</header>
+				<pattern>%msg%n</pattern>
+			</layout>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${logging.file.location}/health-check-%d{yyyy-MM-dd}.%i.csv</fileNamePattern>
+			<maxFileSize>10MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+	</appender>
+	<appender name="logs" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logs.file.location}/${logs.file.name}</file>
+		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+			<layout class="com.sxt.healthcheck.logger.LogFileHeaderPatternLayout">
+				<pattern>%relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+			</layout>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${logs.file.location}/health-check-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxFileSize>10MB</maxFileSize>
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+	</appender>
+	<logger name="com.sxt.healthcheck.manager.SecurityHealthCheckManger" level="INFO" additivity="false">
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="com.sxt.healthcheck.manager.CatalogHealthCheckManger" level="INFO" additivity="false">
+		<appender-ref ref="FILE" />
+	</logger>
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="logs" />
+	</root>
+</configuration>
